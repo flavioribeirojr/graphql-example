@@ -3,6 +3,8 @@
 This project uses graphql to expose an example API just
 for studies purposes
 
+The API will be based on a store of computers.
+
 # Getting started
 
 First, install the dependencies

@@ -2,18 +2,48 @@ const express = require('express')
 const graphqlHTTP = require('express-graphql')
 const { buildSchema } = require('graphql')
 
-const types = require('@/types')
-const { resolvers, queries, mutations } = require('@/queries')
 const port = 4000
 
+const config = require('../../config/app.config')
+
+const connection = require('./DBConnection')(config.db)
+const containers = require('./container')
+
+containers.add('DBConnection', connection)
+
+const types = require('@/types')
+const {
+    resolvers,
+    queries,
+    mutations
+} = require('@/queries')(containers)
+
 const schema = buildSchema(`
-  type Query {
-    ${queries}
-  },
-  type Mutation {
-    ${mutations}
-  },
-  ${types}
+  ${
+    queries === '' ?
+      '' :
+      `
+        type Query {
+          ${queries}
+        },
+      `
+  }
+  ${
+    mutations === '' ?
+      '' :
+      `
+        type Mutation {
+          ${mutations}
+        },
+      `
+  }
+  ${
+    types === '' ?
+      '' :
+      `
+        ${types}
+      `
+  }
 `)
 
 const app = express()
